@@ -22,7 +22,7 @@ jobs:
         with:
           arch: ${{ matrix.platform.arch }}
       - name: Configure
-        run: cmake -G "Ninja" -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DCMAKE_CXX_FLAGS="-Wall -Wconversion -Werror -Wextra -Wshadow -pedantic" -DENABLE_TESTS=ON .
+        run: cmake -G "Ninja" -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DCMAKE_CXX_FLAGS="/fsanitize:address" -DENABLE_TESTS=ON .
       - name: Build
         run: cmake --build .
   msys2:
@@ -35,8 +35,8 @@ jobs:
       matrix:
         platform:
           - msystem: "UCRT64"
-            os: "windows-latest"
             arch: "ucrt-x86_64"
+            os: "windows-latest"
           - msystem: "CLANG64"
             arch: "clang-x86_64"
             os: "windows-latest"
