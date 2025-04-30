@@ -1,0 +1,59 @@
+name: Windows
+
+on: [push, pull_request]
+
+jobs:
+  msvc:
+    name: msvc ${{ matrix.platform.arch }} ${{ matrix.mode }}
+    runs-on: ${{ matrix.platform.os }}
+    strategy:
+      matrix:
+        platform:
+          - arch: "x64"
+            os: "windows-latest"
+          - arch: "x86"
+            os: "windows-latest"
+          - arch: "arm64"
+            os: "windows-11-arm"
+        mode: ["release"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.platform.arch }}
+      - name: Configure
+        run: cmake -G "Ninja" -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DCMAKE_CXX_FLAGS="-Wall -Wconversion -Werror -Wextra -Wshadow -pedantic" -DENABLE_TESTS=ON .
+      - name: Build
+        run: cmake --build .
+  msys2:
+    name: msys2 ${{ matrix.platform.msystem }} ${{ matrix.mode }}
+    runs-on: ${{ matrix.platform.os }}
+    defaults:
+      run:
+        shell: msys2 {0}
+    strategy:
+      matrix:
+        platform:
+          - msystem: "UCRT64"
+            os: "windows-latest"
+            arch: "ucrt-x86_64"
+          - msystem: "CLANG64"
+            arch: "clang-x86_64"
+            os: "windows-latest"
+          - msystem: "CLANGARM64"
+            arch: "clang-aarch64"
+            os: "windows-11-arm"
+        mode: ["release"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.platform.msystem }}
+          install: |
+            mingw-w64-${{ matrix.platform.arch }}-cc
+            mingw-w64-${{ matrix.platform.arch }}-cmake
+            mingw-w64-${{ matrix.platform.arch }}-ninja
+      - name: Configure
+        run: cmake -G "Ninja" -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DCMAKE_CXX_FLAGS="-Wall -Wconversion -Werror -Wextra -Wshadow -pedantic" -DENABLE_TESTS=ON .
+      - name: Build
+        run: cmake --build .

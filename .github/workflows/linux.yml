@@ -1,0 +1,34 @@
+name: Linux
+
+on: [push, pull_request]
+
+jobs:
+  linux-clang:
+    name: clang ${{ matrix.mode }}
+    runs-on: ubuntu-24.04 # noble
+    strategy:
+      matrix:
+        mode: ["release"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup LLVM
+        run: |
+          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/llvm.asc
+          sudo add-apt-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-20 main"
+          sudo apt-get install clang-20 lld-20
+      - name: Configure
+        run: cmake -G "Ninja" -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DCMAKE_CXX_FLAGS="-Wall -Wconversion -Werror -Wextra -Wshadow -pedantic" -DENABLE_TESTS=ON --toolchain /usr/lib/llvm-21 .
+      - name: Build
+        run: cmake --build .
+  linux-gcc:
+    name: gcc ${{ matrix.mode }}
+    runs-on: ubuntu-latest # noble
+    strategy:
+      matrix:
+        mode: ["release"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -G "Ninja" -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DCMAKE_CXX_FLAGS="-Wall -Wconversion -Werror -Wextra -Wshadow -pedantic" -DENABLE_TESTS=ON .
+      - name: Build
+        run: cmake --build .

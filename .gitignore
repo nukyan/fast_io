@@ -10,6 +10,7 @@ benchmarks/*/*.txt
 build
 .vs/
 .*/*
+!.github/
 *.obj
 *.html
 *.txt
