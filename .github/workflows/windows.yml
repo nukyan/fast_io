@@ -21,10 +21,14 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: ${{ matrix.platform.arch }}
-      - name: Configure
-        run: cmake -G "Ninja" -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DCMAKE_CXX_FLAGS="/fsanitize:address" -DENABLE_TESTS=ON .
-      - name: Build
-        run: cmake --build .
+      - name: Build Project
+        uses: threeal/cmake-action@v2
+        with:
+          cxx-flags: /analyze
+          generator: Ninja
+          options: |
+            CMAKE_BUILD_TYPE=${{ matrix.mode }}
+            ENABLE_TESTS=ON
   msys2:
     name: msys2 ${{ matrix.platform.msystem }} ${{ matrix.mode }}
     runs-on: ${{ matrix.platform.os }}
@@ -53,7 +57,11 @@ jobs:
             mingw-w64-${{ matrix.platform.arch }}-cc
             mingw-w64-${{ matrix.platform.arch }}-cmake
             mingw-w64-${{ matrix.platform.arch }}-ninja
-      - name: Configure
-        run: cmake -G "Ninja" -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DCMAKE_CXX_FLAGS="-Wall -Wconversion -Werror -Wextra -Wshadow -pedantic" -DENABLE_TESTS=ON .
-      - name: Build
-        run: cmake --build .
+      - name: Build Project
+        uses: threeal/cmake-action@v2
+        with:
+          cxx-flags: -Wall -Wconversion -Werror -Wextra -Wshadow -pedantic
+          generator: Ninja
+          options: |
+            CMAKE_BUILD_TYPE=${{ matrix.mode }}
+            ENABLE_TESTS=ON
