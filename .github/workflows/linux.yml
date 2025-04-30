@@ -16,7 +16,7 @@ jobs:
       - name: Build Project
         uses: threeal/cmake-action@v2
         with:
-          cxx: ${{ matrix.compiler }}
+          cxx-compiler: ${{ matrix.compiler }}
           cxx-flags: -Wall -Wconversion -Werror -Wextra -Wshadow -pedantic
           generator: Ninja
           options: |
