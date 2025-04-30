@@ -21,6 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Configure
-        run: cmake -G "Ninja" -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DCMAKE_COMPILER_ID=${{ matrix.platform.compiler }} -DCMAKE_CXX_FLAGS="-Wall -Wconversion -Werror -Wextra -Wshadow -pedantic" -DENABLE_TESTS=ON .
+        run: cmake -G "Ninja" -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DCMAKE_CXX_COMPILER_ID=${{ matrix.platform.compiler }} -DCMAKE_CXX_FLAGS="-Wall -Wconversion -Werror -Wextra -Wshadow -pedantic" -DENABLE_TESTS=ON .
       - name: Build
         run: cmake --build .
